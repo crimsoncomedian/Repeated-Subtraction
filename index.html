@@ -16,7 +16,8 @@
 .ld .gr{display:flex;align-items:center;gap:6px;padding-left:12px;font-size:20px;font-weight:600;color:#5e6d81;white-space:nowrap}
 .ld .gr input{width:84px;font-size:20px;padding:7px 8px}
 .ld .gr .val{padding:9px 0;color:#5e6d81}
-.ld .ck{grid-column:2/5;text-align:center}
+.ld .ck{grid-column:2/5;text-align:center;display:flex;gap:10px;justify-content:center}
+.ld .chk.alt{background:#fff;color:#5144c6}
 .ld .chk{border:1px solid #5144c6;border-radius:9px;background:#5144c6;color:#fff;padding:9px 13px;font-size:15px;font-weight:700;cursor:pointer}
 .done{text-align:center;font-weight:700;color:#5e6d81;margin-top:10px}
 .done.fin{color:#18845a}
@@ -34,7 +35,8 @@
 <section class="card"><div class="ld" id="ld"></div>
 <div class="msg" id="msg" role="status" aria-live="polite"></div>
 <div class="controls" style="justify-content:center"><button class="sbtn" id="undo" type="button">Undo</button><button class="sbtn" id="reset" type="button">Start over</button></div></section>
-<section class="card"><div class="done" id="done"></div><form id="form" class="answer"><label for="q">Quotient:</label><input id="q" type="number" step="1" inputmode="numeric" autocomplete="off" placeholder="?"><label for="r">Remainder:</label><input id="r" type="number" step="1" inputmode="numeric" autocomplete="off" placeholder="?"><button class="action" type="submit" id="submit">Submit</button></form><div class="feedback" id="feedback" role="status" aria-live="polite"></div><div style="text-align:center;margin-top:12px"><button id="next" type="button" class="action">New problem &#8635;</button></div></section>
+<section class="card" id="ans" hidden><div class="done fin" id="done"></div><form id="form" class="answer"><label for="q">Quotient:</label><input id="q" type="number" step="1" inputmode="numeric" autocomplete="off" placeholder="?"><label for="r">Remainder:</label><input id="r" type="number" step="1" inputmode="numeric" autocomplete="off" placeholder="?"><button class="action" type="submit" id="submit">Submit</button></form><div class="feedback" id="feedback" role="status" aria-live="polite"></div></section>
+<div style="text-align:center;margin-top:14px"><button id="next" type="button" class="action">New problem &#8635;</button></div>
 </main>
 <script>
 (()=>{
@@ -53,19 +55,19 @@ function render(focus=true){
   h+=`<div></div><div class="sign">\u2212</div><div class="val">${r.product}</div><div class="gr"><span>(</span><span class="val">${r.groups}</span><span>${r.groups===1?'group':'groups'})</span></div>`;
   h+=`<div></div><div class="line"></div><div></div>`;
   if(r.diff!==null)h+=`<div></div><div></div><div class="val">${r.diff}</div><div></div>`;
-  else h+=`<div></div><div></div><div><input id="inDiff" inputmode="numeric" autocomplete="off" aria-label="Difference"></div><div></div><div></div><div class="ck"><button class="chk" id="chk" type="button">Check</button></div>`;
+  else h+=`<div></div><div></div><div><input id="inDiff" inputmode="numeric" autocomplete="off" aria-label="Difference"></div><div></div><div></div><div class="ck"><button class="chk" id="chk" type="button">Check</button><button class="chk alt" id="show" type="button">Show me</button></div>`;
  });
  if(stage()==='prod'&&!fin()){
-  h+=`<div></div><div class="sign">\u2212</div><div><input id="inProd" inputmode="numeric" autocomplete="off" aria-label="Product to subtract"></div><div class="gr"><span>(</span><input id="inGrp" inputmode="numeric" autocomplete="off" aria-label="Number of groups"><span>groups)</span></div><div></div><div class="ck"><button class="chk" id="chk" type="button">Check</button></div>`;
+  h+=`<div></div><div class="sign">\u2212</div><div><input id="inProd" inputmode="numeric" autocomplete="off" aria-label="Product to subtract"></div><div class="gr"><span>(</span><input id="inGrp" inputmode="numeric" autocomplete="off" aria-label="Number of groups"><span>groups)</span></div><div></div><div class="ck"><button class="chk" id="chk" type="button">Check</button><button class="chk alt" id="show" type="button">Show me</button></div>`;
  }
  $('ld').innerHTML=h;
  ['inProd','inGrp','inDiff'].forEach(id=>{const el=$(id);if(el)digitsOnly(el);});
  const f=fin();
- $('q').disabled=$('r').disabled=$('submit').disabled=!f;
+ $('ans').hidden=!f;
  $('undo').disabled=!rows.length;$('reset').disabled=!rows.length;
- $('done').classList.toggle('fin',f);
- $('done').textContent=f?`Nothing more fits: ${leftNow()} is less than ${d}. Now give the quotient and remainder.`:`Keep going until what's left is less than ${d}.`;
+ if(f)$('done').textContent=`Nothing more fits: ${leftNow()} is less than ${d}. Now give the quotient and remainder.`;
  if($('chk'))$('chk').onclick=check;
+ if($('show'))$('show').onclick=showMe;
  if(stage()==='diff'){$('inDiff').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();check();}};if(focus)$('inDiff').focus();}
  else if($('inProd')){
   $('inProd').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();if($('inGrp').value)check();else $('inGrp').focus();}};
@@ -87,6 +89,11 @@ function check(){
  if(p!==g*d){m.textContent=`Check your multiplication: ${g} \u00D7 ${d} is not ${p}. Try again.`;$('inProd').select();return;}
  if(p>leftNow()){m.textContent=`${p} is more than the ${leftNow()} you have left. Try fewer groups.`;$('inGrp').select();return;}
  rows.push({product:p,groups:g,diff:null});render();}
+function showMe(){
+ $('msg').textContent='';$('feedback').textContent='';
+ if(stage()==='diff'){const i=rows.length-1;$('inDiff').value=before(i)-rows[i].product;check();return;}
+ let g=1;while(g*10*d<=leftNow())g*=10;
+ $('inProd').value=g*d;$('inGrp').value=g;check();}
 function setup(a,b){dividend=a;d=b;rows=[];['q','r'].forEach(i=>$(i).value='');$('msg').textContent='';$('feedback').textContent='';render();}
 $('undo').onclick=()=>{$('msg').textContent='';$('feedback').textContent='';if(last()&&last().diff!==null)last().diff=null;else rows.pop();render();};
 $('reset').onclick=()=>setup(dividend,d);
