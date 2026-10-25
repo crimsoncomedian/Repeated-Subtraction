@@ -139,6 +139,6 @@ $('form').onsubmit=e=>{e.preventDefault();
  else{if(!qOk)h+=line('Add up all your groups to find the quotient.','bad');if(!rOk)h+=line('The remainder is what is left over.','bad');}
  fb.innerHTML=h;};
 $('next').onclick=()=>{let a,b;do{b=5+Math.floor(Math.random()*46);a=Math.random()<.5?100+Math.floor(Math.random()*900):1000+Math.floor(Math.random()*9000);if(Math.random()<.4)a-=a%b;}while(a<100||a<5*b);setup(a,b);};
-setup(1248,24);
+$('next').onclick();
 })();
 </script></body></html>
