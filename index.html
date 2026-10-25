@@ -21,6 +21,18 @@
 .chk.alt{background:#fff;color:#5144c6}
 .chk:disabled{opacity:.4;cursor:not-allowed}
 [hidden]{display:none!important}
+.stage{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:20px 36px}
+.sum{display:grid;grid-template-columns:112px auto 92px;column-gap:10px;align-items:center;padding-top:6px;font-variant-numeric:tabular-nums;font-size:26px;font-weight:700}
+.sumcol{grid-column:1;max-height:380px;overflow-y:auto}
+.sr{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:9px 12px 9px 4px}
+.sr .op{width:22px;text-align:right;color:#5e6d81}
+.sumline{grid-column:1;border-top:3px solid #18253a;margin:2px 0 10px}
+.sumform,.sumrow{display:contents}
+.sumcol{grid-row:1}.sumline{grid-row:2}.sumrow #q{grid-area:3/1}.sumrow .R{grid-area:3/2}.sumrow #r{grid-area:3/3}.sumform .action{grid-row:4}
+.sumform .action{grid-column:1/4;justify-self:end;margin-top:12px}
+.sumrow input{font-size:26px;font-weight:700;padding:8px 10px;border:2px solid #7d8fa8;border-radius:9px;text-align:right;font-family:inherit;font-variant-numeric:tabular-nums;background:#fff;width:100%}
+.sumrow input:focus{outline:3px solid #7268e4;outline-offset:1px}
+.sumrow .R{color:#5e6d81}
 .done{text-align:center;font-weight:700;color:#5e6d81;margin-top:10px}
 .done.fin{color:#18845a}
 .sbtn{border:1px solid #c8d3e2;border-radius:9px;background:#f9fbff;padding:11px 14px;color:#17273c;font-weight:650;cursor:pointer}
@@ -34,16 +46,19 @@
 </head>
 <body><main class="app">
 <h1>Repeated Subtraction</h1><div class="sub">Subtract groups of the divisor until nothing more fits. Choose any number of groups you like.</div>
-<section class="card"><div class="ld" id="ld"></div>
+<section class="card"><div class="stage" id="stage"><div class="ld" id="ld"></div>
+<div class="sum" id="sum" hidden><div class="sumcol" id="sumcol"></div><div class="sumline"></div>
+<form id="form" class="sumform"><div class="sumrow"><input id="q" inputmode="numeric" autocomplete="off" aria-label="Quotient: the sum of your groups"><span class="R">R</span><input id="r" inputmode="numeric" autocomplete="off" aria-label="Remainder"></div><button class="action" type="submit" id="submit">Submit</button></form></div></div>
 <div class="btns" id="ctl"><button class="chk" id="chk" type="button">Check</button><button class="chk alt" id="show" type="button">Show me</button><button class="chk alt" id="undo" type="button">Undo</button></div>
 <div class="msg" id="msg" role="status" aria-live="polite"></div>
-<div id="ans" hidden><div class="done fin" id="done"></div><form id="form" class="answer"><label for="q">Quotient (the answer):</label><input id="q" type="number" step="1" inputmode="numeric" autocomplete="off" placeholder="?"><label for="r">Remainder (left over):</label><input id="r" type="number" step="1" inputmode="numeric" autocomplete="off" placeholder="?"><button class="action" type="submit" id="submit">Submit</button></form><div class="feedback" id="feedback" role="status" aria-live="polite"></div></div></section>
+<div class="done fin" id="done" hidden></div>
+<div class="feedback" id="feedback" role="status" aria-live="polite"></div></section>
 <div style="text-align:center;margin-top:14px"><button id="next" type="button" class="action">New problem &#8635;</button></div>
 </main>
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
-let dividend=1248,d=24,rows=[];
+let dividend=1248,d=24,rows=[],wasFin=false;
 const before=i=>i===0?dividend:rows[i-1].diff;
 const last=()=>rows[rows.length-1];
 const stage=()=>(!last()||last().diff!==null)?'prod':'diff';
@@ -52,6 +67,9 @@ const fin=()=>stage()==='prod'&&leftNow()<d;
 const totalGroups=()=>rows.reduce((s,r)=>s+r.groups,0);
 const digitsOnly=el=>el.addEventListener('input',()=>{el.value=el.value.replace(/\D/g,'').slice(0,4);});
 function render(focus=true){
+ const f0=fin();const becoming=f0&&!wasFin;wasFin=f0;
+ const oldLd=becoming?$('ld').getBoundingClientRect():null;
+ const oldSrc=becoming?[...document.querySelectorAll('#ld .gr .val')].map(e=>e.getBoundingClientRect()):[];
  let h=`<div class="dv">${d}</div><div class="bar">${dividend}</div><div></div>`;
  rows.forEach((r,i)=>{
   h+=`<div></div><div class="sign">\u2212</div><div class="val">${r.product}</div><div class="gr"><span>(</span><span class="val">${r.groups}</span><span>${r.groups===1?'group':'groups'})</span></div>`;
@@ -65,16 +83,28 @@ function render(focus=true){
  $('ld').innerHTML=h;
  ['inProd','inGrp','inDiff'].forEach(id=>{const el=$(id);if(el)digitsOnly(el);});
  const f=fin();
- $('ans').hidden=!f;$('ctl').hidden=f;
+ $('sum').hidden=!f;$('done').hidden=!f;$('ctl').hidden=f;
  $('undo').disabled=!rows.length;
+ if(f){buildSum();if(becoming)flip(oldLd,oldSrc);}
  if(f)$('done').textContent=`Nothing more fits: ${leftNow()} is less than ${d}. Add up all your groups to find the quotient. The quotient is the answer! What is left over is the remainder.`;
  if(stage()==='diff'){$('inDiff').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();check();}};if(focus)$('inDiff').focus();}
  else if($('inProd')){
   $('inProd').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();if($('inGrp').value)check();else $('inGrp').focus();}};
   $('inGrp').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();if($('inProd').value)check();else $('inProd').focus();}};
   if(focus)$('inProd').focus();}
- else if(f&&focus)$('q').focus();
+ else if(f&&focus)setTimeout(()=>$('q').focus(),500);
 }
+function buildSum(){
+ $('sumcol').innerHTML=rows.map((r,i)=>`<div class="sr"><span class="op">${i===rows.length-1&&rows.length>1?'+':''}</span><span class="n">${r.groups}</span></div>`).join('');}
+function flip(oldLd,oldSrc){
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const ld=$('ld').getBoundingClientRect();
+ const dx=oldLd.left-ld.left,dy=oldLd.top-ld.top;
+ if(dx||dy)$('ld').animate([{transform:`translate(${dx}px,${dy}px)`},{transform:'none'}],{duration:550,easing:'ease-in-out'});
+ [...document.querySelectorAll('#sumcol .n')].forEach((el,i)=>{const s=oldSrc[i];if(!s)return;const r=el.getBoundingClientRect();
+  el.animate([{transform:`translate(${s.right-r.right}px,${s.top-r.top}px)`,opacity:.2},{transform:'none',opacity:1}],{duration:700,delay:200+i*90,easing:'ease-in-out',fill:'backwards'});});
+ const rest=[document.querySelector('.sumline'),$('form')];
+ rest.forEach(el=>el.animate([{opacity:0},{opacity:1}],{duration:400,delay:350+rows.length*90,fill:'backwards'}));}
 function check(){
  const m=$('msg');m.textContent='';$('feedback').textContent='';
  if(stage()==='diff'){
@@ -94,7 +124,7 @@ function showMe(){
  if(stage()==='diff'){const i=rows.length-1;$('inDiff').value=before(i)-rows[i].product;check();return;}
  let g=1;while(g*10*d<=leftNow())g*=10;
  $('inProd').value=g*d;$('inGrp').value=g;check();}
-function setup(a,b){dividend=a;d=b;rows=[];['q','r'].forEach(i=>$(i).value='');$('msg').textContent='';$('feedback').textContent='';render();}
+function setup(a,b){dividend=a;d=b;rows=[];wasFin=false;['q','r'].forEach(i=>$(i).value='');$('msg').textContent='';$('feedback').textContent='';render();}
 $('undo').onclick=()=>{$('msg').textContent='';$('feedback').textContent='';if(last()&&last().diff!==null)last().diff=null;else rows.pop();render();};
 $('chk').onclick=check;$('show').onclick=showMe;
 $('form').onsubmit=e=>{e.preventDefault();if(!$('q').value.trim()||!$('r').value.trim())return;
