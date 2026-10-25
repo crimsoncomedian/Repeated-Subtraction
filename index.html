@@ -28,13 +28,14 @@
 .sr .op{width:22px;text-align:right;color:#5e6d81}
 .sumline{grid-column:1;border-top:3px solid #18253a;margin:2px 0 10px}
 .sumform,.sumrow{display:contents}
+.sumform .fb{grid-area:5/1/6/4;justify-self:end;text-align:right;font-size:15px;font-weight:650;max-width:250px;margin-top:10px}
+.fb .bad{color:#b53a3a;margin-top:4px}.fb .good{color:#18845a;font-size:17px}
+.sumrow input.ok{border-color:#2e9e62;background:#f1faf5}.sumrow input.bad{border-color:#d05050;background:#fdf3f3}
 .sumcol{grid-row:1}.sumline{grid-row:2}.sumrow #q{grid-area:3/1}.sumrow .R{grid-area:3/2}.sumrow #r{grid-area:3/3}.sumform .action{grid-row:4}
 .sumform .action{grid-column:1/4;justify-self:end;margin-top:12px}
 .sumrow input{font-size:26px;font-weight:700;padding:8px 10px;border:2px solid #7d8fa8;border-radius:9px;text-align:right;font-family:inherit;font-variant-numeric:tabular-nums;background:#fff;width:100%}
 .sumrow input:focus{outline:3px solid #7268e4;outline-offset:1px}
 .sumrow .R{color:#5e6d81}
-.done{text-align:center;font-weight:700;color:#5e6d81;margin-top:10px}
-.done.fin{color:#18845a}
 .sbtn{border:1px solid #c8d3e2;border-radius:9px;background:#f9fbff;padding:11px 14px;color:#17273c;font-weight:650;cursor:pointer}
 .sbtn:disabled{opacity:.4;cursor:not-allowed}
 .answer input:disabled{background:#f0f2f6}
@@ -48,11 +49,10 @@
 <h1>Repeated Subtraction</h1><div class="sub">Subtract groups of the divisor until nothing more fits. Choose any number of groups you like.</div>
 <section class="card"><div class="stage" id="stage"><div class="ld" id="ld"></div>
 <div class="sum" id="sum" hidden><div class="sumcol" id="sumcol"></div><div class="sumline"></div>
-<form id="form" class="sumform"><div class="sumrow"><input id="q" inputmode="numeric" autocomplete="off" aria-label="Quotient: the sum of your groups"><span class="R">R</span><input id="r" inputmode="numeric" autocomplete="off" aria-label="Remainder"></div><button class="action" type="submit" id="submit">Submit</button></form></div></div>
+<form id="form" class="sumform"><div class="sumrow"><input id="q" inputmode="numeric" autocomplete="off" aria-label="Quotient: the sum of your groups"><span class="R">R</span><input id="r" inputmode="numeric" autocomplete="off" aria-label="Remainder"></div><button class="action" type="submit" id="submit">Submit</button><div class="fb" id="feedback" role="status" aria-live="polite"></div></form></div></div>
 <div class="btns" id="ctl"><button class="chk" id="chk" type="button">Check</button><button class="chk alt" id="show" type="button">Show me</button><button class="chk alt" id="undo" type="button">Undo</button></div>
 <div class="msg" id="msg" role="status" aria-live="polite"></div>
-<div class="done fin" id="done" hidden></div>
-<div class="feedback" id="feedback" role="status" aria-live="polite"></div></section>
+</section>
 <div style="text-align:center;margin-top:14px"><button id="next" type="button" class="action">New problem &#8635;</button></div>
 </main>
 <script>
@@ -83,10 +83,9 @@ function render(focus=true){
  $('ld').innerHTML=h;
  ['inProd','inGrp','inDiff'].forEach(id=>{const el=$(id);if(el)digitsOnly(el);});
  const f=fin();
- $('sum').hidden=!f;$('done').hidden=!f;$('ctl').hidden=f;
+ $('sum').hidden=!f;$('ctl').hidden=f;
  $('undo').disabled=!rows.length;
  if(f){buildSum();if(becoming)flip(oldLd,oldSrc);}
- if(f)$('done').textContent=`Nothing more fits: ${leftNow()} is less than ${d}. Add up all your groups to find the quotient. The quotient is the answer! What is left over is the remainder.`;
  if(stage()==='diff'){$('inDiff').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();check();}};if(focus)$('inDiff').focus();}
  else if($('inProd')){
   $('inProd').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();if($('inGrp').value)check();else $('inGrp').focus();}};
@@ -124,13 +123,21 @@ function showMe(){
  if(stage()==='diff'){const i=rows.length-1;$('inDiff').value=before(i)-rows[i].product;check();return;}
  let g=1;while(g*10*d<=leftNow())g*=10;
  $('inProd').value=g*d;$('inGrp').value=g;check();}
-function setup(a,b){dividend=a;d=b;rows=[];wasFin=false;['q','r'].forEach(i=>$(i).value='');$('msg').textContent='';$('feedback').textContent='';render();}
+function setup(a,b){dividend=a;d=b;rows=[];wasFin=false;['q','r'].forEach(i=>{$(i).value='';$(i).classList.remove('ok','bad');});$('msg').textContent='';$('feedback').textContent='';render();}
 $('undo').onclick=()=>{$('msg').textContent='';$('feedback').textContent='';if(last()&&last().diff!==null)last().diff=null;else rows.pop();render();};
 $('chk').onclick=check;$('show').onclick=showMe;
-$('form').onsubmit=e=>{e.preventDefault();if(!$('q').value.trim()||!$('r').value.trim())return;
- const ok=Number($('q').value)===Math.floor(dividend/d)&&Number($('r').value)===dividend%d;
- $('feedback').style.color=ok?'#18845a':'#bb3d3d';
- $('feedback').textContent=ok?'\u2713 Correct! Great work.':'Not quite. Add up your groups and check what is left.';};
+$('form').onsubmit=e=>{e.preventDefault();
+ const qv=$('q').value.trim(),rv=$('r').value.trim(),fb=$('feedback');
+ [$('q'),$('r')].forEach(i=>i.classList.remove('ok','bad'));
+ const line=(t,c)=>`<div class="${c}">${t}</div>`;
+ if(!qv){fb.innerHTML=line('Enter the quotient.','bad');$('q').focus();return;}
+ if(!rv){fb.innerHTML=line('Enter the remainder. Use 0 if nothing is left over.','bad');$('r').focus();return;}
+ const qOk=Number(qv)===Math.floor(dividend/d),rOk=Number(rv)===dividend%d;
+ $('q').classList.add(qOk?'ok':'bad');$('r').classList.add(rOk?'ok':'bad');
+ let h='';
+ if(qOk&&rOk)h=line('\u2713 Correct! Great work.','good');
+ else{if(!qOk)h+=line('Add up all your groups to find the quotient.','bad');if(!rOk)h+=line('The remainder is what is left over.','bad');}
+ fb.innerHTML=h;};
 $('next').onclick=()=>{let a,b;do{b=5+Math.floor(Math.random()*46);a=Math.random()<.5?100+Math.floor(Math.random()*900):1000+Math.floor(Math.random()*9000);if(Math.random()<.4)a-=a%b;}while(a<100||a<5*b);setup(a,b);};
 setup(1248,24);
 })();
