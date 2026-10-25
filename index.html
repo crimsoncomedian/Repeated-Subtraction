@@ -5,29 +5,33 @@
 <title>Repeated Subtraction Workspace</title>
 <style>
 :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#18253a;background:#f5f7fb}*{box-sizing:border-box}body{margin:0;padding:20px}.app{max-width:850px;margin:auto}.card{background:white;border:1px solid #d9e1eb;border-radius:16px;padding:18px;margin:12px 0;box-shadow:0 2px 8px #152b4310}h1{font-size:clamp(22px,4vw,30px);margin:0 0 8px;text-align:center}.problem{text-align:center;font-size:clamp(28px,6vw,40px);font-weight:800;margin:8px}.sub{color:#5e6d81;font-size:13px;text-align:center}.starting{display:grid;grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr);align-items:start;gap:10px}.group{min-width:0;text-align:center}.group strong{font-size:24px}.plus{font-size:28px;font-weight:700;padding-top:2px}.blocks{display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;align-items:flex-start;gap:6px;min-height:90px;margin-top:12px}.workspace{border:2px dashed #afbed1;border-radius:12px;min-height:140px;padding:12px;justify-content:flex-start}.ten,.one,.hundred{flex-shrink:0;cursor:pointer;touch-action:manipulation;transition:transform .12s;border-radius:3px}.ten:hover,.one:hover,.hundred:hover{transform:translateY(-2px)}.ten{height:76px;width:17px;border:1px solid #2e72a9;background:repeating-linear-gradient(to bottom,#8ac8f1 0 6.6px,#2f7eaf 6.6px 7.6px)}.one{width:22px;height:22px;background:#f4c56d;border:1px solid #b78426}.hundred{width:85px;height:85px;border:1px solid #276f93;background:repeating-linear-gradient(0deg,transparent 0 7px,#4389ad 7px 8px),repeating-linear-gradient(90deg,#9bd3e7 0 7px,#4389ad 7px 8px)}.blocks button{padding:0}.blocks button:focus-visible{outline:3px solid #5c52de;outline-offset:3px}.controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.controls button,.action{border:1px solid #c8d3e2;border-radius:9px;background:#f9fbff;padding:11px 14px;color:#17273c;font-weight:650;cursor:pointer}.controls button:disabled{opacity:.4;cursor:not-allowed}.controls .reset{margin-left:auto}.action{background:#5144c6;color:white;border-color:#5144c6}.answer{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px}.answer input{width:125px;font-size:23px;padding:9px;border:1px solid #bccadd;border-radius:9px;text-align:center}.feedback{text-align:center;min-height:25px;font-weight:650;margin-top:12px}.legend{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;color:#65758a;font-size:12px}.legend .ten{height:35px;width:9px}.legend .one{height:16px;width:16px}.legend .hundred{height:29px;width:29px}.heading{display:flex;align-items:center;justify-content:space-between;gap:8px}.heading h2{font-size:17px;margin:0}.small{font-size:13px;color:#63758b}.empty{color:#8491a2;font-size:13px;margin:auto}.workspace .empty{align-self:center}button:focus-visible{outline:3px solid #7268e4;outline-offset:2px}@media(max-width:450px){body{padding:10px}.card{padding:12px}.controls button{flex:1 1 auto;padding:10px 8px;font-size:12px}.controls .reset{margin-left:0}.blocks{gap:4px}.one{width:19px;height:19px}}
-.dv{text-align:center;font-size:clamp(30px,7vw,46px);font-weight:800;margin:4px 0 10px;font-variant-numeric:tabular-nums}
-table.work{width:100%;max-width:520px;margin:6px auto;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:18px}
-.work th{font-size:12px;color:#63758b;font-weight:650;text-align:right;padding:4px 10px;border-bottom:2px solid #c8d3e2}
-.work td{text-align:right;padding:7px 10px;border-bottom:1px solid #e6ebf2}
-.work td.g{color:#5e6d81;font-size:15px}
-.work tr.last td.l{font-weight:800}
-.step{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin-top:14px;font-size:22px;font-weight:700}
-.step input{width:125px;font-size:22px;padding:9px;border:1px solid #bccadd;border-radius:9px;text-align:center}
-.step input:disabled,.answer input:disabled{background:#f0f2f6}
+.ld{display:grid;grid-template-columns:auto 30px 112px auto;justify-content:center;align-items:center;row-gap:8px;margin:10px auto;font-variant-numeric:tabular-nums;font-size:26px;font-weight:700}
+.ld .dv{text-align:right;padding-right:8px;font-size:30px}
+.ld .bar{grid-column:2/4;text-align:right;border-top:3px solid #18253a;border-left:3px solid #18253a;border-top-left-radius:14px;padding:6px 10px 4px 14px;font-size:30px}
+.ld .sign{text-align:right;padding-right:6px}
+.ld .val{text-align:right;padding:9px 10px;border:1px solid transparent}
+.ld input{width:100%;font-size:26px;font-weight:700;padding:8px 10px;border:2px solid #7d8fa8;border-radius:9px;text-align:right;font-family:inherit;font-variant-numeric:tabular-nums;background:#fff}
+.ld input:focus{outline:3px solid #7268e4;outline-offset:1px}
+.ld .line{grid-column:2/4;border-top:3px solid #18253a;height:0}
+.ld .gr{display:flex;align-items:center;gap:6px;padding-left:12px;font-size:20px;font-weight:600;color:#5e6d81;white-space:nowrap}
+.ld .gr input{width:84px;font-size:20px;padding:7px 8px}
+.ld .gr .val{padding:9px 0;color:#5e6d81}
+.ld .ck{grid-column:2/5;text-align:center}
+.ld .chk{border:1px solid #5144c6;border-radius:9px;background:#5144c6;color:#fff;padding:9px 13px;font-size:15px;font-weight:700;cursor:pointer}
 .done{text-align:center;font-weight:700;color:#5e6d81;margin-top:10px}
 .done.fin{color:#18845a}
 .sbtn{border:1px solid #c8d3e2;border-radius:9px;background:#f9fbff;padding:11px 14px;color:#17273c;font-weight:650;cursor:pointer}
 .sbtn:disabled{opacity:.4;cursor:not-allowed}
+.answer input:disabled{background:#f0f2f6}
 .answer label{font-weight:700}
 .msg{text-align:center;min-height:24px;font-weight:650;margin-top:10px;color:#bb3d3d}
+@media(max-width:430px){.ld{font-size:22px;grid-template-columns:auto 22px 96px auto}.ld .dv,.ld .bar{font-size:24px}.ld input{font-size:22px}.ld .gr{font-size:15px;padding-left:6px}.ld .gr input{width:62px;font-size:16px}}
 
 </style>
 </head>
 <body><main class="app">
-<h1>Repeated Subtraction</h1><div class="sub">Subtract groups of the divisor until nothing more fits. Pick any number of groups you like.</div>
-<section class="card"><div class="dv" id="problem"></div>
-<table class="work" aria-label="Your subtraction steps"><thead><tr><th>Subtract</th><th>Groups</th><th>Left</th></tr></thead><tbody id="rows"></tbody></table>
-<form id="step" class="step" novalidate><input id="groups" type="number" min="1" step="1" inputmode="numeric" autocomplete="off" aria-label="Number of groups" placeholder="groups"><span>&times; <span id="d1"></span> =</span><input id="product" type="number" min="1" step="1" inputmode="numeric" autocomplete="off" aria-label="Product" placeholder="product"><button class="action" id="go" type="submit">Subtract</button></form>
+<h1>Repeated Subtraction</h1><div class="sub">Subtract groups of the divisor until nothing more fits. Choose any number of groups you like.</div>
+<section class="card"><div class="ld" id="ld"></div>
 <div class="msg" id="msg" role="status" aria-live="polite"></div>
 <div class="controls" style="justify-content:center"><button class="sbtn" id="undo" type="button">Undo</button><button class="sbtn" id="reset" type="button">Start over</button></div></section>
 <section class="card"><div class="done" id="done"></div><form id="form" class="answer"><label for="q">Quotient:</label><input id="q" type="number" step="1" inputmode="numeric" autocomplete="off" placeholder="?"><label for="r">Remainder:</label><input id="r" type="number" step="1" inputmode="numeric" autocomplete="off" placeholder="?"><button class="action" type="submit" id="submit">Submit</button></form><div class="feedback" id="feedback" role="status" aria-live="polite"></div><div style="text-align:center;margin-top:12px"><button id="next" type="button" class="action">New problem &#8635;</button></div></section>
@@ -35,34 +39,56 @@ table.work{width:100%;max-width:520px;margin:6px auto;border-collapse:collapse;f
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
-const fmt=n=>n.toLocaleString('en-US');
-let dividend=1248,d=24,steps=[];
-const left=()=>dividend-steps.reduce((s,x)=>s+x.product,0);
-const totalGroups=()=>steps.reduce((s,x)=>s+x.groups,0);
-function render(){
- $('problem').textContent=`${fmt(dividend)} \u00F7 ${d}`;$('d1').textContent=d;
- let html=`<tr><td class="g">start</td><td></td><td class="l">${fmt(dividend)}</td></tr>`;
- let rem=dividend;
- steps.forEach((s,i)=>{rem-=s.product;html+=`<tr${i===steps.length-1?' class="last"':''}><td>\u2212 ${fmt(s.product)}</td><td class="g">${fmt(s.groups)} \u00D7 ${d}</td><td class="l">${fmt(rem)}</td></tr>`;});
- $('rows').innerHTML=html;
- const fin=left()<d;
- $('groups').disabled=$('product').disabled=$('go').disabled=fin;
- $('q').disabled=$('r').disabled=$('submit').disabled=!fin;
- $('undo').disabled=!steps.length;$('reset').disabled=!steps.length;
- $('done').classList.toggle('fin',fin);
- $('done').textContent=fin?`Nothing more fits: ${fmt(left())} is less than ${d}. Now give the quotient and remainder.`:`Keep going until what's left is less than ${d}.`;
+let dividend=1248,d=24,rows=[];
+const before=i=>i===0?dividend:rows[i-1].diff;
+const last=()=>rows[rows.length-1];
+const stage=()=>(!last()||last().diff!==null)?'prod':'diff';
+const leftNow=()=>last()?last().diff:dividend;
+const fin=()=>stage()==='prod'&&leftNow()<d;
+const totalGroups=()=>rows.reduce((s,r)=>s+r.groups,0);
+const digitsOnly=el=>el.addEventListener('input',()=>{el.value=el.value.replace(/\D/g,'').slice(0,4);});
+function render(focus=true){
+ let h=`<div class="dv">${d}</div><div class="bar">${dividend}</div><div></div>`;
+ rows.forEach((r,i)=>{
+  h+=`<div></div><div class="sign">\u2212</div><div class="val">${r.product}</div><div class="gr"><span>(</span><span class="val">${r.groups}</span><span>${r.groups===1?'group':'groups'})</span></div>`;
+  h+=`<div></div><div class="line"></div><div></div>`;
+  if(r.diff!==null)h+=`<div></div><div></div><div class="val">${r.diff}</div><div></div>`;
+  else h+=`<div></div><div></div><div><input id="inDiff" inputmode="numeric" autocomplete="off" aria-label="Difference"></div><div></div><div></div><div class="ck"><button class="chk" id="chk" type="button">Check</button></div>`;
+ });
+ if(stage()==='prod'&&!fin()){
+  h+=`<div></div><div class="sign">\u2212</div><div><input id="inProd" inputmode="numeric" autocomplete="off" aria-label="Product to subtract"></div><div class="gr"><span>(</span><input id="inGrp" inputmode="numeric" autocomplete="off" aria-label="Number of groups"><span>groups)</span></div><div></div><div class="ck"><button class="chk" id="chk" type="button">Check</button></div>`;
+ }
+ $('ld').innerHTML=h;
+ ['inProd','inGrp','inDiff'].forEach(id=>{const el=$(id);if(el)digitsOnly(el);});
+ const f=fin();
+ $('q').disabled=$('r').disabled=$('submit').disabled=!f;
+ $('undo').disabled=!rows.length;$('reset').disabled=!rows.length;
+ $('done').classList.toggle('fin',f);
+ $('done').textContent=f?`Nothing more fits: ${leftNow()} is less than ${d}. Now give the quotient and remainder.`:`Keep going until what's left is less than ${d}.`;
+ if($('chk'))$('chk').onclick=check;
+ if(stage()==='diff'){$('inDiff').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();check();}};if(focus)$('inDiff').focus();}
+ else if($('inProd')){
+  $('inProd').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();if($('inGrp').value)check();else $('inGrp').focus();}};
+  $('inGrp').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();if($('inProd').value)check();else $('inProd').focus();}};
+  if(focus)$('inProd').focus();}
+ else if(f&&focus)$('q').focus();
 }
-function setup(a,b){dividend=a;d=b;steps=[];['groups','product','q','r'].forEach(i=>$(i).value='');$('msg').textContent='';$('feedback').textContent='';render();$('groups').focus();}
-$('groups').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('product').focus();}};
-$('step').onsubmit=e=>{e.preventDefault();
- const g=Number($('groups').value),p=Number($('product').value);
- if(!$('groups').value.trim()||!Number.isInteger(g)||g<1){$('msg').textContent='Enter a whole number of groups, 1 or more.';$('groups').focus();return;}
- if(!$('product').value.trim()||!Number.isInteger(p)){$('msg').textContent=`What is ${g} \u00D7 ${d}?`;$('product').focus();return;}
- if(p!==g*d){$('msg').textContent=`Check your multiplication: ${g} \u00D7 ${d} is not ${fmt(p)}. Try again.`;$('product').select();return;}
- if(p>left()){$('msg').textContent=`${fmt(p)} is more than the ${fmt(left())} you have left. Try fewer groups.`;$('groups').focus();$('groups').select();return;}
- steps.push({groups:g,product:p});$('groups').value='';$('product').value='';$('msg').textContent='';$('feedback').textContent='';render();
- if(left()<d)$('q').focus();else $('groups').focus();};
-$('undo').onclick=()=>{steps.pop();$('msg').textContent='';$('feedback').textContent='';render();};
+function check(){
+ const m=$('msg');m.textContent='';$('feedback').textContent='';
+ if(stage()==='diff'){
+  const v=$('inDiff').value;if(v===''){m.textContent='Type the difference.';return;}
+  const i=rows.length-1,exp=before(i)-rows[i].product;
+  if(Number(v)!==exp){m.textContent='Not quite. Try the subtraction again.';$('inDiff').select();return;}
+  rows[i].diff=exp;render();return;}
+ const pv=$('inProd').value,gv=$('inGrp').value;
+ if(pv===''){m.textContent='Type the number you want to subtract.';$('inProd').focus();return;}
+ if(gv===''||Number(gv)<1){m.textContent='Type the number of groups (1 or more).';$('inGrp').focus();return;}
+ const p=Number(pv),g=Number(gv);
+ if(p!==g*d){m.textContent=`Check your multiplication: ${g} \u00D7 ${d} is not ${p}. Try again.`;$('inProd').select();return;}
+ if(p>leftNow()){m.textContent=`${p} is more than the ${leftNow()} you have left. Try fewer groups.`;$('inGrp').select();return;}
+ rows.push({product:p,groups:g,diff:null});render();}
+function setup(a,b){dividend=a;d=b;rows=[];['q','r'].forEach(i=>$(i).value='');$('msg').textContent='';$('feedback').textContent='';render();}
+$('undo').onclick=()=>{$('msg').textContent='';$('feedback').textContent='';if(last()&&last().diff!==null)last().diff=null;else rows.pop();render();};
 $('reset').onclick=()=>setup(dividend,d);
 $('form').onsubmit=e=>{e.preventDefault();if(!$('q').value.trim()||!$('r').value.trim())return;
  const ok=Number($('q').value)===Math.floor(dividend/d)&&Number($('r').value)===dividend%d;
