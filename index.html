@@ -37,7 +37,7 @@
 <section class="card"><div class="ld" id="ld"></div>
 <div class="btns" id="ctl"><button class="chk" id="chk" type="button">Check</button><button class="chk alt" id="show" type="button">Show me</button><button class="chk alt" id="undo" type="button">Undo</button></div>
 <div class="msg" id="msg" role="status" aria-live="polite"></div>
-<div id="ans" hidden><div class="done fin" id="done"></div><form id="form" class="answer"><label for="q">Quotient:</label><input id="q" type="number" step="1" inputmode="numeric" autocomplete="off" placeholder="?"><label for="r">Remainder:</label><input id="r" type="number" step="1" inputmode="numeric" autocomplete="off" placeholder="?"><button class="action" type="submit" id="submit">Submit</button></form><div class="feedback" id="feedback" role="status" aria-live="polite"></div></div></section>
+<div id="ans" hidden><div class="done fin" id="done"></div><form id="form" class="answer"><label for="q">Quotient (the answer):</label><input id="q" type="number" step="1" inputmode="numeric" autocomplete="off" placeholder="?"><label for="r">Remainder (left over):</label><input id="r" type="number" step="1" inputmode="numeric" autocomplete="off" placeholder="?"><button class="action" type="submit" id="submit">Submit</button></form><div class="feedback" id="feedback" role="status" aria-live="polite"></div></div></section>
 <div style="text-align:center;margin-top:14px"><button id="next" type="button" class="action">New problem &#8635;</button></div>
 </main>
 <script>
@@ -67,7 +67,7 @@ function render(focus=true){
  const f=fin();
  $('ans').hidden=!f;$('ctl').hidden=f;
  $('undo').disabled=!rows.length;
- if(f)$('done').textContent=`Nothing more fits: ${leftNow()} is less than ${d}. Now give the quotient and remainder.`;
+ if(f)$('done').textContent=`Nothing more fits: ${leftNow()} is less than ${d}. Add up all your groups to find the quotient. The quotient is the answer! What is left over is the remainder.`;
  if(stage()==='diff'){$('inDiff').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();check();}};if(focus)$('inDiff').focus();}
  else if($('inProd')){
   $('inProd').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();if($('inGrp').value)check();else $('inGrp').focus();}};
